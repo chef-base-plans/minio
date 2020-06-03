@@ -1,2 +1,9 @@
-# base-plan-skeleton
-Template for all new Chef Base Plans to simplify creation of repositories.
+# Minio
+
+Minio is a high performance distributed object storage server, designed for large-scale private cloud infrastructure.
+
+## Usage
+
+`hab svc start core/minio`
+
+Access the web browser on `http://fqdn:9000`
