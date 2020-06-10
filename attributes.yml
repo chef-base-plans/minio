@@ -1,2 +1,2 @@
-command_relative_path: '/bin/minio'
+command_relative_path: 'bin/minio'
 listening_port: '9000'

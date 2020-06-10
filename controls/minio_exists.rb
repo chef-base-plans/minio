@@ -2,6 +2,7 @@ title 'Tests to confirm minio exists'
 
 plan_origin = ENV['HAB_ORIGIN']
 plan_name = input('plan_name', value: 'minio')
+command_relative_path = input('command_relative_path', value: 'bin/minio')
 
 control 'core-plans-minio-exists' do
   impact 1.0
@@ -15,8 +16,7 @@ control 'core-plans-minio-exists' do
     its('stdout') { should_not be_empty }
   end
 
-  command_relative_path = input('command_relative_path', value: '/bin/minio')
-  command_full_path = plan_installation_directory.stdout.strip + "#{command_relative_path}"
+  command_full_path = File.join(plan_installation_directory.stdout.strip, "#{command_relative_path}")
   describe file(command_full_path) do
     it { should exist }
   end
