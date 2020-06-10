@@ -8,8 +8,10 @@ control 'core-plans-minio-habservice-works' do
   title 'Ensure minio habitat service works as expected'
   desc '
   Verify minio habitat service by ensuring that 
-  (1) the default.minio habitat service is "up"; 
-  (2) the minio process is LISTENing on the expected port.  Note the regex that 
+  (1) the default.minio habitat service is "up";
+  (2) the core/busybox-static netstat binary is available, as it used
+  in the following process verification
+  (3) the minio process is LISTENing on the expected port.  Note the regex that 
   detects the LISTENing <program> works in both a habitat studio environment
   and a docker one.  In studio the program is displayed like "1234/minio";
   whereas in docker as "-".
@@ -29,8 +31,15 @@ control 'core-plans-minio-habservice-works' do
     its('stderr') { should be_empty }
   end
 
+  netstat_installation_directory = command("hab pkg path core/busybox-static")
+  describe netstat_installation_directory do
+    its('exit_status') { should eq 0 }
+    its('stdout') { should_not be_empty }
+  end
+
+  netstat_fullpath = File.join(netstat_installation_directory.stdout.strip, "bin/netstat" )
   listening_port=input('listening_port', value: '9000')
-  describe command("hab pkg exec core/busybox-static netstat -peanut") do
+  describe command("#{netstat_fullpath} -peanut") do
     its('exit_status') { should eq 0 }
     its('stdout') { should_not be_empty }
     its('stdout') { should match /:(?<port>#{listening_port}).*LISTEN\s+(?<program>-|\d+\/#{plan_name})/ }
